@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [userResponseText, setUserResponseText] = useState('');
   const [gradingResult, setGradingResult] = useState<any>(null);
   const [isGrading, setIsGrading] = useState(false);
+  const [usedAiGrading, setUsedAiGrading] = useState(false);
 
   useEffect(() => {
     fetchSkills();
@@ -51,7 +52,15 @@ export default function DashboardPage() {
 
   const handleGradeWithAI = async () => {
     const currentItem = dailyItems[currentItemIndex];
-    const referenceAnswer = currentItem?.question?.referenceAnswer || currentItem?.task?.description || 'Standard answer';
+    // T8: For coding tasks, use solutionCode as reference instead of description
+    const task = currentItem?.task;
+    const referenceAnswer = currentItem?.question?.referenceAnswer
+      || (task?.type === 'CODING' ? task?.solutionCode : task?.description)
+      || task?.description
+      || 'Standard answer';
+
+    // T4: Mark that AI grading was used for this item
+    setUsedAiGrading(true);
     
     setIsGrading(true);
     try {
@@ -87,6 +96,7 @@ export default function DashboardPage() {
           reviewItemId: currentItem.id,
           quality,
           response: userResponseText || 'Manual response',
+          isAiAssisted: usedAiGrading, // T4: Track AI dependency
         }),
       });
 
@@ -94,6 +104,7 @@ export default function DashboardPage() {
       setShowAnswer(false);
       setUserResponseText('');
       setGradingResult(null);
+      setUsedAiGrading(false); // T4: Reset AI grading flag for next card
       if (currentItemIndex < dailyItems.length - 1) {
         setCurrentItemIndex(currentItemIndex + 1);
       } else {

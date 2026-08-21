@@ -8,7 +8,7 @@ export class OpenRouterAdapter implements IAIGatewayProvider {
 
   constructor(apiKey?: string, model?: string) {
     this.apiKey = apiKey || process.env.OPENROUTER_API_KEY || '';
-    this.model = model || process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-lite-preview-02-05:free';
+    this.model = model || process.env.OPENROUTER_MODEL || 'openrouter/auto';
   }
 
   async generateText(request: AIGenerateRequest): Promise<AIGenerateResponse> {

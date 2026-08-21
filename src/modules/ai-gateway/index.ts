@@ -1,5 +1,5 @@
 import { IAIGatewayProvider, AIGenerateRequest, AIGenerateResponse, GradingRubric, GradingResult } from './types';
-import { OllamaAdapter } from './ollama-adapter';
+import { LMStudioAdapter } from './lmstudio-adapter';
 import { OpenRouterAdapter } from './openrouter-adapter';
 import { z } from 'zod';
 
@@ -9,13 +9,13 @@ export class AIGatewayService implements IAIGatewayProvider {
   private fallbackProvider: IAIGatewayProvider;
 
   constructor() {
-    const activeProvider = process.env.AI_PROVIDER || 'ollama';
+    const activeProvider = process.env.AI_PROVIDER || 'lmstudio';
 
     if (activeProvider === 'openrouter') {
       this.primaryProvider = new OpenRouterAdapter();
-      this.fallbackProvider = new OllamaAdapter();
+      this.fallbackProvider = new LMStudioAdapter();
     } else {
-      this.primaryProvider = new OllamaAdapter();
+      this.primaryProvider = new LMStudioAdapter();
       this.fallbackProvider = new OpenRouterAdapter();
     }
   }

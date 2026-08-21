@@ -1,23 +1,33 @@
-version: '3.8'
+# Docker Compose — Developer Training System
+#
+# NOTE: MVP phase uses SQLite (file:./dev.db) — no Docker services required.
+# PostgreSQL service is prepared below for production deployment.
+# To switch to PostgreSQL:
+#   1. Uncomment the postgres service below
+#   2. Change prisma/schema.prisma: provider = "postgresql"
+#   3. Update .env: DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dts_db?schema=public"
+#   4. Run: npx prisma migrate dev
 
-services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: dts_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: dts_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
+# version: '3.8'
+#
+# services:
+#   postgres:
+#     image: postgres:16-alpine
+#     container_name: dts_postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: dts_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U postgres"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 5
+#
+# volumes:
+#   postgres_data:

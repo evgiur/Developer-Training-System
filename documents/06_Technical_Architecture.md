@@ -42,9 +42,9 @@ Scheduler -> Application API / jobs
 
 ## 5. AI providers
 
-### Provider A — Ollama local
+### Provider A — LM Studio local
 
-Используется для максимальной независимости от внешнего API и нулевой стоимости inference. Ollama предоставляет каталог локальных моделей и локальный runtime. На момент подготовки спецификации каталог включает, среди прочих, кодовые/agentic модели Laguna XS 2.1 и другие. Доступность конкретной модели может меняться.
+Используется для максимальной независимости от внешнего API и нулевой стоимости inference. LM Studio предоставляет OpenAI-совместимый API (`/v1/chat/completions`) для локальных моделей. Текущая модель: `qwen/qwen3-coder-30b` на `http://127.0.0.1:1234`. Ранее использовался Ollama (до 2026-08-19), заменён на LM Studio для лучшей совместимости с OpenAI API-форматом.
 
 ### Provider B — OpenRouter free
 
@@ -56,7 +56,7 @@ Scheduler -> Application API / jobs
 
 ## 6. Storage
 
-PostgreSQL.
+PostgreSQL (production target). MVP phase uses SQLite (`file:./dev.db`) for zero-dependency local development. Migration to PostgreSQL is planned for production deployment — see `docker-compose.yml` for prepared configuration.
 
 Минимальные индексы:
 

@@ -1,42 +1,47 @@
 import { IAIGatewayProvider, AIGenerateRequest, AIGenerateResponse, GradingRubric, GradingResult, GradingResultSchema } from './types';
 import { z } from 'zod';
 
-export class OllamaAdapter implements IAIGatewayProvider {
-  name = 'ollama';
+export class LMStudioAdapter implements IAIGatewayProvider {
+  name = 'lmstudio';
   private baseUrl: string;
   private model: string;
 
   constructor(baseUrl?: string, model?: string) {
-    this.baseUrl = baseUrl || process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-    this.model = model || process.env.OLLAMA_MODEL || 'qwen2.5-coder';
+    this.baseUrl = baseUrl || process.env.LMSTUDIO_BASE_URL || 'http://127.0.0.1:1234';
+    this.model = model || process.env.LMSTUDIO_MODEL || 'qwen/qwen3-coder-30b';
   }
 
   async generateText(request: AIGenerateRequest): Promise<AIGenerateResponse> {
     const startTime = Date.now();
     const systemMessage = request.systemPrompt || 'You are an expert AI assistant for a developer training system.';
-    
-    const response = await fetch(`${this.baseUrl}/api/generate`, {
+
+    const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         model: this.model,
-        prompt: `${systemMessage}\n\nUser: ${request.prompt}`,
+        messages: [
+          { role: 'system', content: systemMessage },
+          { role: 'user', content: request.prompt },
+        ],
+        temperature: request.temperature ?? 0.2,
         stream: false,
-        options: {
-          temperature: request.temperature ?? 0.2,
-        },
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+      const errText = await response.text();
+      throw new Error(`LM Studio API error (${response.status}): ${errText}`);
     }
 
     const data = await response.json();
     const latencyMs = Date.now() - startTime;
+    const textOutput = data.choices?.[0]?.message?.content || '';
 
     return {
-      text: data.response || '',
+      text: textOutput,
       provider: this.name,
       model: this.model,
       latencyMs,

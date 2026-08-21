@@ -50,8 +50,15 @@ export function calculateNextInterval(
     nextInterval = 1;
     nextEaseFactor = Math.max(1.3, easeFactor - 0.2);
     nextStatus = 'REMEDIATION';
+  } else if (quality === 2) {
+    // Quality 2: Correct with difficulty -> Short fixed interval, no ease increase
+    // Per spec §3: "2 → repeat after short interval" (distinct from quality 3)
+    nextRepetitions += 1;
+    nextInterval = 1; // Always 1 day regardless of repetitions
+    nextEaseFactor = Math.max(1.3, easeFactor - 0.05); // Slight decrease
+    nextStatus = 'GRADED';
   } else {
-    // Quality 2, 3, or 4: Success
+    // Quality 3 or 4: Good/Perfect recall -> Interval increases
     nextRepetitions += 1;
     nextEaseFactor = Math.max(1.3, easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
 
